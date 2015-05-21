@@ -1,5 +1,5 @@
 Processing sketchbook - experiments and code examples
-=====
+=====================================================
 
 
 Each of the examples here is a self-contained processing sketch (so far).
@@ -9,5 +9,6 @@ Mostly, these are my own experiments with graphics and animation and not really 
 
 A list of sketches inside:
 
-simpleWaves is an attempt to figure out the P3D graphics mode and how to deal with 3d primitives.
+### simpleWaves ###
+this is an attempt to figure out the P3D graphics mode and how to deal with 3d primitives.
 ![Screenshot](http://i.imgur.com/BAQJ8yW.gif)
