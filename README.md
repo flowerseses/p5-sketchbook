@@ -12,3 +12,5 @@ A list of sketches inside:
 ### simpleWaves ###
 this is an attempt to figure out the P3D graphics mode and how to deal with 3d primitives.
 ![Screenshot](http://i.imgur.com/BAQJ8yW.gif)
+
+other in-progress stuff....
