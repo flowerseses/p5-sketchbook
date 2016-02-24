@@ -1,10 +1,19 @@
+"use strict";
+
 var lineX, lineY;
 var angleIncrement;
 var side, diagonal;
+var increment;
+var runAwayTimer;
 
 function setup() {
     createCanvas(1000, 800);
     background(255);
+    stroke(0, 0, 0, 10);
+    line(width/5, 0, width/5, height);
+    line(4*width/5, 0, 4*width/5, height);
+    line(0, height/5, width, height/5);
+    line(0, 4*height/5, width, 4*height/5);
     stroke(0, 0, 0, 50);
     noFill();
     lineX = width/2;
@@ -12,20 +21,19 @@ function setup() {
     angleIncrement = PI/4;
     side = 10;
     diagonal = sqrt(200);
+    increment = getIncrement(Math.round(random(0, 7)), lineX, lineY, width, height);
 }
 
 function draw() {
     var inside = false;
     while(!inside) {
-        var increment = getIncrement(lineX, lineY, width, height);
+        increment = getIncrement(increment, lineX, lineY, width, height);
         var lineLen;
         var xPos, yPos;
         if (increment % 2 == 0) {
             lineLen = side;
-            console.log("side");
         } else {
             lineLen = diagonal;
-            console.log("diagonal");
         }
         var angle = angleIncrement*increment;
         xPos = lineX + lineLen*cos(angleIncrement*increment);
@@ -42,6 +50,49 @@ function draw() {
 }
 
 // TODO: fix me up so that I return weighted directions
-function getIncrement(lineX, lineY, w, h) {
-    return Math.round(random(0, 7));
+function getIncrement(prev, lineX, lineY, w, h) {
+    var res;
+    if (random(0, 1) > 0.4) {
+        res = Math.round(random(prev - 1, prev + 1));
+    } else {
+        res = Math.round(random(0, 8));
+    }
+    if (lineX < w/5) {
+        if (lineY < h/5) {
+            if (random(0, 1) > 0.65) {
+                res = Math.round(random(0, 2));
+            }
+        } else if (lineY > 4*h/5) {
+            if (random(0, 1) > 0.65) {
+                res = Math.round(random(-2, 0));
+            }
+        } else {
+            if (random(0, 1) > 0.65) {
+                res = Math.round(random(-2, 2));
+            }
+        }
+    } else if (lineX > 4*w/5) {
+        if (lineY < h/5) {
+            if (random(0, 1) > 0.65) {
+                res = Math.round(random(2, 4));
+            }
+        } else if (lineY > 4*h/5) {
+            if (random(0, 1) > 0.65) {
+                res = Math.round(random(4, 6));
+            }
+        } else {
+            if (random(0, 1) > 0.65) {
+                res = Math.round(random(2, 6));
+            }
+        }
+    } else if (lineY < h/5) {
+        if (random(0, 1) > 0.65) {
+            res = Math.round(random(0, 4));
+        }
+    } else if (lineY > 4*h/5) {
+        if (random(0, 1) > 0.65) {
+            res = Math.round(random(4, 8));
+        }
+    }
+    return res;
 }
