@@ -5,48 +5,65 @@ var angleIncrement;
 var side, diagonal;
 var increment;
 var runAwayTimer;
+var xPositions, yPositions, colors, increments;
+var numSnakes;
 
 function setup() {
     createCanvas(1000, 800);
-    background(255);
+    colorMode(HSB, 100);
+    frameRate(20);
+    background(0, 0, 100);
     stroke(0, 0, 0, 10);
     line(width/5, 0, width/5, height);
     line(4*width/5, 0, 4*width/5, height);
     line(0, height/5, width, height/5);
     line(0, 4*height/5, width, 4*height/5);
-    stroke(0, 0, 0, 50);
-    noFill();
-    lineX = width/2;
-    lineY = height/2;
+
+    numSnakes = 8;
+    xPositions = [];
+    yPositions = [];
+    colors = [];
+    increments = [];
     angleIncrement = PI/4;
     side = 10;
     diagonal = sqrt(200);
-    increment = getIncrement(Math.round(random(0, 7)), lineX, lineY, width, height);
+
+    for (var i = 0; i < numSnakes; i++) {
+        colors[i] = color(i*100/numSnakes + random(-20, 20), 100, 100, 20);
+        xPositions[i] = width/2;
+        yPositions[i] = height/2;
+        increments[i] = getIncrement(Math.round(random(0, 7)), xPositions[i], yPositions[i], width, height);
+    }
+    noFill();
 }
 
 function draw() {
-    var inside = false;
-    while(!inside) {
-        increment = getIncrement(increment, lineX, lineY, width, height);
-        var lineLen;
-        var xPos, yPos;
-        if (increment % 2 == 0) {
-            lineLen = side;
-        } else {
-            lineLen = diagonal;
+    for (var i = 0; i < numSnakes; i++) {
+        var inside = false;
+        while(!inside) {
+            increments[i] = getIncrement(increments[i], xPositions[i], yPositions[i], width, height);
+            var lineLen;
+            var xPos, yPos;
+            if (increments[i] % 2 == 0) {
+                lineLen = side;
+            } else {
+                lineLen = diagonal;
+            }
+            var angle = angleIncrement*increments[i];
+            xPos = xPositions[i] + lineLen*cos(angle);
+            yPos = yPositions[i] + lineLen*sin(angle);
+            if (xPos < 0 || xPos > width || yPos < 0 || yPos > height) {
+                inside = false;
+            } else {
+                inside = true;
+            }
         }
-        var angle = angleIncrement*increment;
-        xPos = lineX + lineLen*cos(angleIncrement*increment);
-        yPos = lineY + lineLen*sin(angleIncrement*increment);
-        if (xPos < 0 || xPos > width || yPos < 0 || yPos > height) {
-            inside = false;
-        } else {
-            inside = true;
-        }
+        stroke(colors[i])
+        console.log(increments[i]);
+        line(xPositions[i], yPositions[i], xPos, yPos);
+        xPositions[i] = xPos;
+        yPositions[i] = yPos;
     }
-    line(lineX, lineY, xPos, yPos);
-    lineX = xPos;
-    lineY = yPos;
 }
 
 // TODO: fix me up so that I return weighted directions

@@ -8,6 +8,8 @@ var runAwayTimer;
 var xPositions, yPositions, colors, increments;
 var numSnakes;
 
+var quadrantMap;
+
 function setup() {
     createCanvas(1000, 800);
     colorMode(HSB, 100);
@@ -28,11 +30,13 @@ function setup() {
     side = 10;
     diagonal = sqrt(200);
 
+    quadrantMap = initQuadrants();;
+    
     for (var i = 0; i < numSnakes; i++) {
-        colors[i] = color(Math.round(random(0, 100)), 100, 100, 30);
+        colors[i] = color(Math.round(random(0, 100)), 100, 100, 20);
         xPositions[i] = width/2;
         yPositions[i] = height/2;
-        increments[i] = getIncrement(Math.round(random(0, 7)), xPositions[i], yPositions[i], width, height);
+        increments[i] = getIncrement(Math.round(random(0, 7)), xPositions[i], yPositions[i], width, height, quadrantMap);
     }
     noFill();
 }
@@ -41,7 +45,7 @@ function draw() {
     for (var i = 0; i < numSnakes; i++) {
         var inside = false;
         while(!inside) {
-            increments[i] = getIncrement(increments[i], xPositions[i], yPositions[i], width, height);
+            increments[i] = getIncrement(increments[i], xPositions[i], yPositions[i], width, height, quadrantMap);
             var lineLen;
             var xPos, yPos;
             if (increments[i] % 2 == 0) {
@@ -58,8 +62,7 @@ function draw() {
                 inside = true;
             }
         }
-        stroke(colors[i])
-        console.log(increments[i]);
+        stroke(colors[i]);
         line(xPositions[i], yPositions[i], xPos, yPos);
         xPositions[i] = xPos;
         yPositions[i] = yPos;
@@ -67,49 +70,61 @@ function draw() {
 }
 
 // TODO: fix me up so that I return weighted directions
-function getIncrement(prev, lineX, lineY, w, h) {
+function getIncrement(prev, lineX, lineY, w, h, quadrantMap) {
     var res;
-    if (random(0, 1) > 0.4) {
-        res = Math.round(random(prev - 1, prev + 1));
-    } else {
-        res = Math.round(random(0, 8));
-    }
-    if (lineX < w/5) {
-        if (lineY < h/5) {
-            if (random(0, 1) > 0.65) {
-                res = Math.round(random(0, 2));
-            }
-        } else if (lineY > 4*h/5) {
-            if (random(0, 1) > 0.65) {
-                res = Math.round(random(-2, 0));
-            }
+    var quadrant = getQuadrant(lineX, lineY, w, h);
+    var dirs = quadrantMap[quadrant];
+    do {
+        if (random(0, 1) > 0.4) {
+            res = Math.round(random(prev - 1, prev + 1));
         } else {
-            if (random(0, 1) > 0.65) {
-                res = Math.round(random(-2, 2));
+            res = Math.round(random(0, 8));
+        }
+        if (quadrant != 5) {
+            if (random(0,1) > 0.65) {
+                res = Math.round(random(dirs[0], dirs[1]));
             }
         }
-    } else if (lineX > 4*w/5) {
-        if (lineY < h/5) {
-            if (random(0, 1) > 0.65) {
-                res = Math.round(random(2, 4));
-            }
-        } else if (lineY > 4*h/5) {
-            if (random(0, 1) > 0.65) {
-                res = Math.round(random(4, 6));
-            }
-        } else {
-            if (random(0, 1) > 0.65) {
-                res = Math.round(random(2, 6));
-            }
-        }
-    } else if (lineY < h/5) {
-        if (random(0, 1) > 0.65) {
-            res = Math.round(random(0, 4));
-        }
-    } else if (lineY > 4*h/5) {
-        if (random(0, 1) > 0.65) {
-            res = Math.round(random(4, 8));
-        }
-    }
+    } while ((res-4) == prev || res + 4 == prev);
     return res;
+}
+
+function initQuadrants() {
+    var quadrantMap = []
+    quadrantMap[1] = [0, 2];
+    quadrantMap[2] = [-2, 2]
+    quadrantMap[3] = [-2, 0]
+    quadrantMap[4] = [0, 4];
+    quadrantMap[5] = [0, 8];
+    quadrantMap[6] = [4, 8];
+    quadrantMap[7] = [2, 4];
+    quadrantMap[8] = [2, 6];
+    quadrantMap[9] = [4, 6];
+    return quadrantMap;
+}
+
+function getQuadrant(x, y, w, h) {
+    var quadrant = 5;
+    if (x < w/5) {
+        if (y < h/5) {
+            quadrant = 1;
+        } else if (y > 4*h/5) {
+            quadrant = 3;
+        } else {
+            quadrant = 2
+        }
+    } else if (x > 4*w/5) {
+        if (y < h/5) {
+            quadrant = 7;
+        } else if (y > 4*h/5) {
+            quadrant = 9;
+        } else {
+            quadrant = 8
+        }
+    } else if (y < h/5) {
+        quadrant = 4
+    } else if (y > 4*h/5) {
+        quadrant = 6;
+    }
+    return quadrant;
 }
