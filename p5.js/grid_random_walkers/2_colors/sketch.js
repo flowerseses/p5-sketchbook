@@ -3,8 +3,6 @@
 var lineX, lineY;
 var angleIncrement;
 var side, diagonal;
-var increment;
-var runAwayTimer;
 var xPositions, yPositions, colors, increments;
 var numSnakes;
 
@@ -15,11 +13,6 @@ function setup() {
     colorMode(HSB, 100);
     frameRate(20);
     background(0, 0, 100);
-    stroke(0, 0, 0, 10);
-    line(width/5, 0, width/5, height);
-    line(4*width/5, 0, 4*width/5, height);
-    line(0, height/5, width, height/5);
-    line(0, 4*height/5, width, 4*height/5);
 
     numSnakes = 8;
     xPositions = [];
